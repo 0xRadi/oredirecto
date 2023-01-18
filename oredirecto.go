@@ -58,16 +58,15 @@ func fuzzURL(originalURL string) []string {
 }
 
 func getURL(url string) *http.Response {
-	//client := &http.Client{
-	//	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-	//		return http.ErrUseLastResponse
-	//	},
-	//}
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("User-Agent", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36")
-	//resp, err := client.Do(req)
-	resp, err := http.Get(url)
+	resp, err := client.Do(req)
 
 	if err != nil {
 		fmt.Println("Error requesting URL:", err)
@@ -92,7 +91,6 @@ func containsCanary(resp *http.Response) string {
 	}
 	// check the body
 	body, _ := ioutil.ReadAll(resp.Body)
-
 	if re_body.Match(body) {
 		found := re_body.FindString(string(body))
 		return found
