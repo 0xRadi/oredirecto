@@ -21,9 +21,11 @@ func main() {
 			fuzzedURLs := fuzzURL(originalURL)
 			for _, url := range fuzzedURLs {
 				resp := getURL(url)
-				if containsCanary(resp) != "" {
-					fmt.Println(containsCanary(resp) + url)
-					break
+				if resp != nil {
+					if containsCanary(resp) != "" {
+						fmt.Println(containsCanary(resp) + url)
+						break
+					}
 				}
 			}
 			wg.Done()
@@ -35,7 +37,7 @@ func main() {
 func fuzzURL(originalURL string) []string {
 	u, err := url.Parse(originalURL)
 	if err != nil {
-		fmt.Println("Error parsing URL:", err)
+		//fmt.Println("Error parsing URL:", err)
 		return nil
 	}
 
@@ -70,7 +72,7 @@ func getURL(url string) *http.Response {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("Error requesting URL:", err)
+		//fmt.Println("Error requesting URL:", err)
 		return nil
 	}
 
