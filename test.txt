@@ -1,5 +1,0 @@
-https://example.com?param1=value1&param2=value2&param3=value3
-https://example2.com?param1=value1&
-https://example3.com/?param1=value1&
-https://example4.com/?
-https://example5.com/?param1=value1&x=x?x=x
