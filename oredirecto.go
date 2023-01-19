@@ -46,8 +46,8 @@ func fuzzURL(originalURL string) []string {
 	fuzzValues := []string{
 		"injection:/here",
 		"injection:here",
-		"http://canaryredirect.fr",
-		"http://" + u.Hostname() + ".canaryredirect.fr"}
+		"http://ahmedradi.com",
+		"http://" + u.Hostname() + ".ahmedradi.com"}
 	for _, fuzzValue := range fuzzValues {
 		for key, value := range queryParams {
 			originalValue := value[0]
@@ -81,8 +81,8 @@ func getURL(url string) *http.Response {
 }
 
 func containsCanary(resp *http.Response) string {
-	re_header := regexp.MustCompile("(?i)^https?:\\/\\/(?:[^\\/]+\\.)?canaryredirect\\.fr(\\/.*)?$")
-	re_body := regexp.MustCompile("(?i)=[ ]?['\"]https?:\\/\\/(?:[^\\/=\\?]+\\.)?canaryredirect\\.fr(\\/.*)?['\"]|CANARY049|['\"]injection:[/]?here['\"]")
+	re_header := regexp.MustCompile("(?i)^https?:\\/\\/(?:[^\\/]+\\.)?ahmedradi\\.com(\\/.*)?$")
+	re_body := regexp.MustCompile("(?i)=[ ]?['\"]https?:\\/\\/(?:[^\\/=\\?]+\\.)?ahmedradi\\.com(\\/.*)?['\"]|REDIRECT313|['\"]injection:[/]?here['\"]")
 	found := ""
 	// check the headers
 	for _, headers := range resp.Header {
