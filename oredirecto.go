@@ -22,7 +22,7 @@ func main() {
 			for _, url := range fuzzedURLs {
 				resp := getURL(url)
 				if containsCanary(resp) != "" {
-					fmt.Printf("[Found] [" + containsCanary(resp) + "] " + url)
+					fmt.Println(containsCanary(resp) + url)
 					break
 				}
 			}
@@ -42,8 +42,9 @@ func fuzzURL(originalURL string) []string {
 	queryParams := u.Query()
 	var fuzzedURLs []string
 	fuzzValues := []string{
+		"http://canaryredirect.fr",
 		"http://" + u.Hostname() + ".canaryredirect.fr",
-		"http://canaryredirect.fr"}
+		"xzxx:xzxx"}
 	for _, fuzzValue := range fuzzValues {
 		for key, value := range queryParams {
 			originalValue := value[0]
@@ -77,15 +78,16 @@ func getURL(url string) *http.Response {
 }
 
 func containsCanary(resp *http.Response) string {
-	re_header := regexp.MustCompile("(https?:)?(\\/\\/)(([a-zA-Z0-9-_]+).+\\.)?canaryredirect\\.fr(\\/.*)?$")
-	re_body := regexp.MustCompile("=[ ]?['\"](https?:)?(\\/\\/)?(([a-zA-Z0-9-_]+).+\\.)?canaryredirect\\.fr(\\/.*)?['\"]")
+	re_header := regexp.MustCompile("(?i)(https?:)?(\\/\\/)(([a-zA-Z0-9-_]+).+\\.)?canaryredirect\\.fr(\\/.*)?$")
+	re_body := regexp.MustCompile("(?i)=[ ]?['\"](https?:)?(\\/\\/)?(([a-zA-Z0-9-_]+).+\\.)?canaryredirect\\.fr(\\/.*)?['\"]|CANARY049|['\"]xzxx:xzxx['\"]")
 	found := ""
 	// check the headers
 	for _, headers := range resp.Header {
 		for _, h := range headers {
 			if re_header.MatchString(h) {
 				found := re_header.FindString(h)
-				return found
+				result := "[Found] [Header] [" + found + "] "
+				return result
 			}
 		}
 	}
@@ -93,6 +95,8 @@ func containsCanary(resp *http.Response) string {
 	body, _ := ioutil.ReadAll(resp.Body)
 	if re_body.Match(body) {
 		found := re_body.FindString(string(body))
+		result := "[Potential] [Body] [" + found + "] "
+		fmt.Print(result)
 		return found
 	}
 	return found
